@@ -1,7 +1,5 @@
 name = "osrs-proxy"
 type = "javascript"
-
+main = "worker.js"
 compatibility_date = "2025-04-09"
 
-# Uncomment below if your code lives somewhere else
-# main = "src/index.js"
