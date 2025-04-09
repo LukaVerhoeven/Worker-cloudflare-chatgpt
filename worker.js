@@ -1,25 +1,21 @@
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+    const upstreamPath = url.pathname.replace(/^\/?/, "");
+    const originalTarget = `https://prices.runescape.wiki/${upstreamPath}`;
 
-    // Extract just the path to append to real API
-    const upstreamPath = url.pathname.replace(/^\/?/, ""); // Remove leading slash
-    const target = `https://prices.runescape.wiki/${upstreamPath}`;
+    // Filter query for `id` if present
+    const itemIds = url.searchParams.get("id");
+    const headers = { "User-Agent": "my-osrs-gpt-bot/1.0" };
 
-    // Forward the request with the required User-Agent
-    const response = await fetch(target, {
-      method: "GET",
-      headers: {
-        "User-Agent": "my-osrs-gpt-bot/1.0",
-      },
-    });
+    const target = itemIds ? `${originalTarget}?id=${itemIds}` : originalTarget;
 
-    // Return the response as-is, making sure it's JSON
-    return new Response(await response.text(), {
+    const response = await fetch(target, { headers });
+    const text = await response.text();
+
+    return new Response(text, {
       status: response.status,
-      headers: {
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
     });
   },
 };
